@@ -76,7 +76,7 @@ class _HomeState extends State<Home> {
                               },
                               title: "Videos",
                               selected: videoSelect,
-                              icon: Icons.play_arrow_outlined),
+                              icon: Icons.play_arrow_rounded),
                         ],
 
                         //

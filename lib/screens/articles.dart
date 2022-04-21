@@ -12,21 +12,21 @@ class ArticlePage extends StatefulWidget {
 
 class _ArticlePageState extends State<ArticlePage> {
   Color primary = const Color(0xFFC02E21);
-  late Future<Article> futureArticle;
+  late Future<Map<String, dynamic>> futureArticle;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureArticle = fetchData();
+    fetchData();
   }
 
-  Future<Article> fetchData() async {
+  Future fetchData() async {
     final response =
         await http.get(Uri.parse('https://ign-apis.herokuapp.com/articles'));
-
     if (response.statusCode == 200) {
-      return Article.fromJson(jsonDecode(response.body));
+      futureArticle = jsonDecode(response.body);
+      print(futureArticle);
     } else {
       throw Exception('Failed to load album');
     }
