@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
             children: [
               //AppBAr
               SizedBox(
-                height: 170,
+                height: 157,
                 child: Column(
                   children: [
                     Container(
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
                     ),
                     //Articles and Videos Selection
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 15.0),
+                      padding: const EdgeInsets.only(bottom: 5.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -85,9 +85,9 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              Container(
+              SizedBox(
                   width: double.infinity,
-                  height: height - 170,
+                  height: height - 157,
                   child: SingleChildScrollView(
                     child:
                         articleSelect ? const ArticlePage() : const VideoPage(),

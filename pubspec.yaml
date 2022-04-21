@@ -19,6 +19,8 @@ dependencies:
   
   cupertino_icons: ^1.0.2
   http: ^0.13.4
+  timeago: ^3.2.2
+  webview_flutter: ^3.0.2
 
 dev_dependencies:
   flutter_test:

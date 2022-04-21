@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ign_mobile_flutter/models/articleModel.dart';
+import 'package:ign_mobile_flutter/screens/articlewebview.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -12,11 +13,9 @@ class ArticlePage extends StatefulWidget {
 
 class _ArticlePageState extends State<ArticlePage> {
   Color primary = const Color(0xFFC02E21);
-  late Future<Map<String, dynamic>> futureArticle;
-
+  late List<String> slugs = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchData();
   }
@@ -25,69 +24,117 @@ class _ArticlePageState extends State<ArticlePage> {
     final response =
         await http.get(Uri.parse('https://ign-apis.herokuapp.com/articles'));
     if (response.statusCode == 200) {
-      futureArticle = jsonDecode(response.body);
-      print(futureArticle);
+      return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to load album');
+      throw Exception('Failed to load article');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Container(
       width: double.infinity,
+      height: height - 167,
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child:
-          //  FutureBuilder(
-          //   future: futureArticle,
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return articleCard(
-          //         onTap: () {
-          //           //TODO:Open article
-          //         },
-          //         title: '',
-          //         image: '',
-          //         description: '',
-          //         profile: '',
-          //         writer: '',
-          //         comment: '',
-          //         time: '',
-          //         dontKnow: '',
-          //       );
-          //     }
-          //     return Container();
-          //   },
-          // ),
-          Column(
-        children: [
-          articleCard(
-            onTap: () {
-              //TODO:Open article
-            },
-            title: 'Sea of Thiefs Releases Admist Vast Server Issues',
-            image: 'assets/wolf.jpg',
-            description:
-                'The beta will run from september 2-4 and will be opened to all PS4 owners event those without a PS Subscription',
-            profile: 'assets/wolf.jpg',
-            writer: 'Tom Marks',
-            comment: '300',
-            time: '2 mins ago',
-            dontKnow: 'THE ORANGE BOX',
-          ),
-          article2Card(
-            onTap: () {
-              //TODO:Open article
-            },
-            title: 'Sea of Thiefs Releases Admist Vast Server Issues',
-            image: 'assets/wolf.jpg',
-            profile: 'assets/wolf.jpg',
-            writer: 'Tom Marks',
-            comment: '300',
-            time: '2 mins ago',
-            dontKnow: 'THE ORANGE BOX',
-          ),
-        ],
+      child: FutureBuilder(
+        future: fetchData(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          } else if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data['data'].length,
+              itemBuilder: (context, index) {
+                if (slugs.length < snapshot.data['data'].length) {
+                  slugs.add(snapshot.data['data'][index]['metadata']['slug']);
+                }
+                if (snapshot.data['data'][index]['metadata']['description'] ==
+                    null) {
+                  return article2Card(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticleWebView(
+                            url:
+                                '${snapshot.data['data'][index]['metadata']['slug']}',
+                            number: index,
+                            slugs: slugs,
+                          ),
+                        ),
+                      );
+                    },
+                    title: snapshot.data['data'][index]['metadata']['headline'],
+                    image: snapshot.data['data'][index]['thumbnails'][2]['url'],
+                    profile: snapshot.data['data'][index]['authors'].length > 0
+                        ? snapshot.data['data'][index]['authors'][0]
+                                    ['thumbnail'] ==
+                                ''
+                            ? 'https://oystatic.ignimgs.com/src/core/img/social/avatars/ign.jpg'
+                            : snapshot.data['data'][index]['authors'][0]
+                                ['thumbnail']
+                        : "https://images.genius.com/393bfda8da80c5024e572eb01cf58020.900x900x1.jpg",
+                    writer: snapshot.data['data'][index]['authors'].length > 0
+                        ? snapshot.data['data'][index]['authors'][0]['name']
+                        : "Unknown author",
+                    comment: '970',
+                    time: timeago
+                        .format(DateTime.parse(snapshot.data['data'][index]
+                            ['metadata']['publishDate']))
+                        .toString(),
+                    dontKnow: snapshot.data['data'][index]['tags'].length > 0
+                        ? snapshot.data['data'][index]['tags'][0]
+                        : 'none',
+                  );
+                } else {
+                  return articleCard(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticleWebView(
+                            url:
+                                '${snapshot.data['data'][index]['metadata']['slug']}',
+                            number: index,
+                            slugs: slugs,
+                          ),
+                        ),
+                      );
+                    },
+                    title: snapshot.data['data'][index]['metadata']['headline'],
+                    image: snapshot.data['data'][index]['thumbnails'][2]['url'],
+                    description: snapshot.data['data'][index]['metadata']
+                            ['description'] ??
+                        '',
+                    profile: snapshot.data['data'][index]['authors'].length > 0
+                        ? snapshot.data['data'][index]['authors'][0]
+                                    ['thumbnail'] ==
+                                ''
+                            ? 'https://oystatic.ignimgs.com/src/core/img/social/avatars/ign.jpg'
+                            : snapshot.data['data'][index]['authors'][0]
+                                ['thumbnail']
+                        : "https://images.genius.com/393bfda8da80c5024e572eb01cf58020.900x900x1.jpg",
+                    writer: snapshot.data['data'][index]['authors'].length > 0
+                        ? snapshot.data['data'][index]['authors'][0]['name']
+                        : "Unknown author",
+                    comment: '970',
+                    time: timeago
+                        .format(DateTime.parse(snapshot.data['data'][index]
+                            ['metadata']['publishDate']))
+                        .toString(),
+                    dontKnow: snapshot.data['data'][index]['tags'].length > 0
+                        ? '${snapshot.data['data'][index]['tags'][0]},${snapshot.data['data'][index]['tags'][1]}'
+                        : 'none',
+                  );
+                }
+              },
+            );
+          }
+          return const Center(child: Text('Loading....'));
+        },
       ),
     );
   }
@@ -145,7 +192,7 @@ class _ArticlePageState extends State<ArticlePage> {
                     height: 10,
                   ),
                   //Article image
-                  Image.asset(
+                  Image.network(
                     image,
                     width: double.infinity,
                     height: 150,
@@ -173,8 +220,10 @@ class _ArticlePageState extends State<ArticlePage> {
                         child: SizedBox(
                           height: 36,
                           width: 36,
-                          child: Image.asset(
+                          child: Image.network(
                             profile,
+                            height: 36,
+                            width: 36,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -288,7 +337,7 @@ class _ArticlePageState extends State<ArticlePage> {
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Image.asset(
+                        Image.network(
                           image,
                           width: double.infinity,
                           height: 165,
@@ -351,9 +400,11 @@ class _ArticlePageState extends State<ArticlePage> {
                           child: SizedBox(
                             height: 36,
                             width: 36,
-                            child: Image.asset(
+                            child: Image.network(
                               profile,
                               fit: BoxFit.cover,
+                              height: 36,
+                              width: 36,
                             ),
                           ),
                         ),

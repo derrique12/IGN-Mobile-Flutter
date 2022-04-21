@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ArticleWebView extends StatefulWidget {
-  const ArticleWebView(
+class VideoWebView extends StatefulWidget {
+  const VideoWebView(
       {Key? key, required this.url, required this.number, required this.slugs})
       : super(key: key);
   final String url;
   final List<String> slugs;
   final int number;
-
   @override
-  State<ArticleWebView> createState() => _ArticleWebViewState();
+  State<VideoWebView> createState() => _VideoWebViewState();
 }
 
-class _ArticleWebViewState extends State<ArticleWebView> {
+class _VideoWebViewState extends State<VideoWebView> {
   Color primary = const Color(0xFFC02E21);
 
   late List<String> slugs = [];
@@ -21,7 +20,6 @@ class _ArticleWebViewState extends State<ArticleWebView> {
   void initState() {
     super.initState();
     slugs = widget.slugs;
-    print(slugs.length);
   }
 
   @override
@@ -53,17 +51,19 @@ class _ArticleWebViewState extends State<ArticleWebView> {
                 ),
               ]),
             ),
+
             SizedBox(
               height: height - 90,
               width: double.infinity,
               child: PageView.builder(
-                  controller: controller,
-                  itemCount: slugs.length,
-                  itemBuilder: (context, index) {
-                    return WebView(
-                      initialUrl: 'ign.com/articles/${widget.url}',
-                    );
-                  }),
+                controller: controller,
+                itemCount: slugs.length,
+                itemBuilder: (context, index) {
+                  return WebView(
+                    initialUrl: 'ign.com/videos/${slugs[index]}',
+                  );
+                },
+              ),
             )
           ],
         ),
