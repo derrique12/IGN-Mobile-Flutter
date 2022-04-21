@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ign_mobile_flutter/screens/articles.dart';
 import 'package:ign_mobile_flutter/screens/videos.dart';
-import 'package:http/http.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -16,69 +15,85 @@ class _HomeState extends State<Home> {
   bool videoSelect = false;
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // double height = MediaQuery.of(context).size.height;
+    double height = MediaQuery.of(context).size.height;
     // /double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         return false;
       },
       child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-              child: Column(
+        body: SizedBox(
+          width: double.infinity,
+          height: height,
+          child: Column(
             children: [
               //AppBAr
-              Container(
-                width: double.infinity,
-                height: 60,
-                color: primary,
-                child: Center(
-                  child: Image.asset(
-                    'assets/logo.png',
-                    height: 50,
-                    fit: BoxFit.fitHeight,
-                    color: Colors.white,
-                  ),
+              SizedBox(
+                height: 170,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(top: 35),
+                      width: double.infinity,
+                      height: 90,
+                      color: primary,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/logo.png',
+                          height: 30,
+                          fit: BoxFit.fitHeight,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    //Articles and Videos Selection
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          titleMenu(
+                            onTap: () {
+                              setState(() {
+                                articleSelect = true;
+                                videoSelect = false;
+                              });
+                            },
+                            title: 'Articles',
+                            selected: articleSelect,
+                            icon: Icons.article,
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          titleMenu(
+                              onTap: () {
+                                setState(() {
+                                  articleSelect = false;
+                                  videoSelect = true;
+                                });
+                              },
+                              title: "Videos",
+                              selected: videoSelect,
+                              icon: Icons.play_arrow_outlined),
+                        ],
+
+                        //
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              //Articles and Videos Selection
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  titleMenu(
-                    onTap: () {
-                      articleSelect = true;
-                      videoSelect = false;
-                    },
-                    title: 'Articles',
-                    selected: articleSelect,
-                    icon: Icons.article,
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  titleMenu(
-                      onTap: () {
-                        articleSelect = false;
-                        videoSelect = true;
-                      },
-                      title: "Videos",
-                      selected: videoSelect,
-                      icon: Icons.play_arrow_outlined),
-                ],
-
-                //
-              ),
-              articleSelect ? const ArticlePage() : const VideoPage(),
+              Container(
+                  width: double.infinity,
+                  height: height - 170,
+                  child: SingleChildScrollView(
+                    child:
+                        articleSelect ? const ArticlePage() : const VideoPage(),
+                  )),
             ],
-          )),
+          ),
         ),
       ),
     );
@@ -92,27 +107,28 @@ class _HomeState extends State<Home> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(vertical: 13),
         decoration: BoxDecoration(
           border: selected
               ? const Border(
-                  bottom: BorderSide(color: Colors.black, width: 2),
+                  bottom: BorderSide(color: Colors.black, width: 5),
                 )
-              : Border.all(width: 0),
+              : Border.all(color: Colors.white),
         ),
         child: Row(
           children: [
             Icon(
               icon,
               color: selected ? Colors.black : Colors.grey,
-              size: 18,
+              size: title == "Articles" ? 20 : 30,
             ),
+            const SizedBox(width: 4),
             Text(
-              title,
+              title.toUpperCase(),
               style: TextStyle(
                 color: selected ? Colors.black : Colors.grey,
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 19,
               ),
             ),
           ],
