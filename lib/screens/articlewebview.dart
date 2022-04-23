@@ -21,7 +21,6 @@ class _ArticleWebViewState extends State<ArticleWebView> {
   void initState() {
     super.initState();
     slugs = widget.slugs;
-    print(slugs.length);
   }
 
   @override
@@ -29,43 +28,18 @@ class _ArticleWebViewState extends State<ArticleWebView> {
     double height = MediaQuery.of(context).size.height;
     PageController controller = PageController(initialPage: widget.number);
     return Scaffold(
-      body: SizedBox(
-        width: double.infinity,
-        height: height,
-        child: Column(
-          children: [
-            //AppBAr
-            SizedBox(
-              child: Column(children: [
-                Container(
-                  padding: const EdgeInsets.only(top: 35),
-                  width: double.infinity,
-                  height: 90,
-                  color: primary,
-                  child: Center(
-                    child: Image.asset(
-                      'assets/logo.png',
-                      height: 30,
-                      fit: BoxFit.fitHeight,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ]),
-            ),
-            SizedBox(
-              height: height - 90,
-              width: double.infinity,
-              child: PageView.builder(
-                  controller: controller,
-                  itemCount: slugs.length,
-                  itemBuilder: (context, index) {
-                    return WebView(
-                      initialUrl: 'ign.com/articles/${widget.url}',
-                    );
-                  }),
-            )
-          ],
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: height,
+          child: PageView.builder(
+              controller: controller,
+              itemCount: slugs.length,
+              itemBuilder: (context, index) {
+                return WebView(
+                  initialUrl: 'ign.com/articles/${widget.url}',
+                );
+              }),
         ),
       ),
     );
