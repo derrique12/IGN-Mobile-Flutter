@@ -2,4 +2,4 @@
 
 A new Flutter project.
 
-You can the apk file in apk folder
+You can find the apk file in apk folder
