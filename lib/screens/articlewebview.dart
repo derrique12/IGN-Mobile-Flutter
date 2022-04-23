@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -15,6 +17,8 @@ class ArticleWebView extends StatefulWidget {
 
 class _ArticleWebViewState extends State<ArticleWebView> {
   Color primary = const Color(0xFFC02E21);
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
 
   late List<String> slugs = [];
   @override
@@ -38,10 +42,28 @@ class _ArticleWebViewState extends State<ArticleWebView> {
               itemBuilder: (context, index) {
                 return WebView(
                   initialUrl: 'ign.com/articles/${widget.url}',
+                  javascriptMode: JavascriptMode.unrestricted,
+                  zoomEnabled: true,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller.complete(webViewController);
+                  },
+                  javascriptChannels: <JavascriptChannel>{
+                    _toasterJavascriptChannel(context),
+                  },
                 );
               }),
         ),
       ),
     );
+  }
+
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
   }
 }
